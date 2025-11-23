@@ -347,6 +347,8 @@
           Trabalho elaborado para a disciplina Algoritmos em Grafos - Professor Geraldo Pereira de Souza
         </h2>
       </div>
+      <hr>
+      <p class="text-center text-md font-bold">Comece gerando um grafo</p>
       <li>
         <label class="form-control">
           <span class="label-text">Número de vértices</span>
