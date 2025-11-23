@@ -2,7 +2,6 @@
   import { Network } from "vis-network";
   import { Vertice, Aresta, Grafo } from "$lib/Model/Grafo";
 
-  let numVertices = $state(5);
   let grafo: Grafo | null = null;
 
   let graphContainer: HTMLDivElement;
@@ -53,7 +52,6 @@
     grafo = new Grafo(vertices, arestas, dirigido);
     desenharGrafo();
   }
-
 
   function desenharGrafo() {
     if (!grafo || !graphContainer) return;
@@ -213,11 +211,112 @@
   }
 
   function fechoTransitivo() {
-    // tua lógica
+    if (!grafo) return;
+
+    function buscarAlcancaveis(inicio: number, inverterDirecao: boolean): Set<number> {
+      const visitados = new Set<number>([inicio]);
+      const fila = [inicio];
+
+      while (fila.length > 0) {
+        const u = fila.shift()!;
+        
+        const arestasAdjacentes = grafo!.arestas.filter(a => {
+          if (!grafo!.dirigido) return a.origem === u || a.destino === u;
+          return inverterDirecao ? a.destino === u : a.origem === u;
+        });
+
+        for (const a of arestasAdjacentes) {
+          const v = !grafo!.dirigido
+            ? (a.origem === u ? a.destino : a.origem)
+            : (inverterDirecao ? a.origem : a.destino);
+
+          if (!visitados.has(v)) {
+            visitados.add(v);
+            fila.push(v);
+          }
+        }
+      }
+      return visitados;
+    }
+
+    const fechoDireto = buscarAlcancaveis(verticeTransitivo, false);
+    const fechoInverso = buscarAlcancaveis(verticeTransitivo, true);
+
+    const idsNoFecho = new Set([...fechoDireto, ...fechoInverso]);
+
+    const novosVertices = grafo.vertices.filter(v => idsNoFecho.has(v.id));
+    const novasArestas = grafo.arestas.filter(a => 
+      idsNoFecho.has(a.origem) && idsNoFecho.has(a.destino)
+    );
+
+    grafo = new Grafo(novosVertices, novasArestas, grafo.dirigido);
+    desenharGrafo();
   }
 
+  function buscaProfundidade() {
+    if (!grafo) return;
+
+    const visitados = new Set<number>();
+    const arestasDFS: Aresta[] = [];
+
+    function dfs(u: number) {
+      visitados.add(u);
+
+      const vizinhos = grafo!.arestas.filter(a => 
+        a.origem === u || (!grafo!.dirigido && a.destino === u)
+      );
+
+      for (const a of vizinhos) {
+        const v = a.origem === u ? a.destino : a.origem;
+
+        if (!visitados.has(v)) {
+          arestasDFS.push(new Aresta(u, v, a.peso));
+          dfs(v);
+        }
+      }
+    }
+
+    dfs(verticeBusca);
+
+    grafo = new Grafo(grafo.vertices, arestasDFS, grafo.dirigido);
+    desenharGrafo();
+  }
+
+  function buscaLargura() {
+    if (!grafo) return;
+
+    const visitados = new Set<number>([verticeBusca]);
+    const fila = [verticeBusca];
+    const arestasBFS: Aresta[] = [];
+
+    while (fila.length > 0) {
+      const u = fila.shift()!;
+
+      const vizinhos = grafo.arestas.filter(a => 
+        a.origem === u || (!grafo!.dirigido && a.destino === u)
+      );
+
+      for (const a of vizinhos) {
+        const v = a.origem === u ? a.destino : a.origem;
+
+        if (!visitados.has(v)) {
+          visitados.add(v);
+          fila.push(v);
+          arestasBFS.push(new Aresta(u, v, a.peso));
+        }
+      }
+    }
+
+    grafo = new Grafo(grafo.vertices, arestasBFS, grafo.dirigido);
+    desenharGrafo();
+  }
+
+  let numVertices = $state(5);
+  
   let verticeX = $state(1);
   let verticeY = $state(5);
+  let verticeTransitivo = $state(1);
+  let verticeBusca = $state(1);
 
   let ponderado = $state(false);
   let peso = $state(1);
@@ -326,10 +425,43 @@
       </li>
  
       <li>
-        <button class="btn w-full" onclick={fechoTransitivo}>
-          Fecho Transitivo
-        </button>
+        <div class="border border-base-300 rounded-xl p-3 flex flex-col gap-3 bg-base-100">
+          <label class="form-control">
+              <span class="label-text">Vertice Fecho Transitivo</span>
+              <input
+                type="number"
+                bind:value={verticeTransitivo}
+                min="1"
+                class="input input-bordered"
+              />
+            </label>
+          <button class="btn w-full" onclick={fechoTransitivo}>
+            Fecho Transitivo
+          </button>
+        </div>
       </li>
+
+      <li>
+        <div class="border border-base-300 rounded-xl p-3 flex flex-col gap-3 bg-base-100">
+          <label class="form-control">
+              <span class="label-text">Vertice para Busca</span>
+              <input
+                type="number"
+                bind:value={verticeBusca}
+                min="1"
+                class="input input-bordered"
+              />
+            </label>
+          <button class="btn w-full" onclick={buscaProfundidade}>
+            Busca Profundidade
+          </button>
+
+          <button class="btn w-full" onclick={buscaLargura}>
+            Busca em Largura
+          </button>
+        </div>
+      </li>
+
     </ul>
   </div>
 </div>
