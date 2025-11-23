@@ -1,38 +1,37 @@
-# sv
+# Documentação do Projeto de Grafos
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Métodos
 
-## Creating a project
+### gerarGrafo()
 
-If you're seeing this, you've probably already done this step. Congrats!
+Gera um grafo com base nos parâmetros definidos pelo usuário,
+incluindo: - Número de vértices - Direcionamento - Ponderação -
+Conectividade - Geração automática de pesos quando aplicável
 
-```sh
-# create a new project in the current directory
-npx sv create
+### desenharGrafo()
 
-# create a new project in my-app
-npx sv create my-app
-```
+Renderiza o grafo atual na tela utilizando a biblioteca de visualização
+configurada.
 
-## Developing
+### gerarMST()
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Gera a árvore geradora mínima (MST) do grafo atual usando Kruskal. Para
+dígrafos, converte arestas para forma subjacente.
 
-```sh
-npm run dev
+### caminhoMinimo()
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Calcula o caminho mínimo entre dois vértices `verticeX` e `verticeY`
+definidos pelo usuário.
 
-## Building
+### fechoTransitivo()
 
-To create a production version of your app:
+Calcula o fecho transitivo de um vértice: - Direto e reverso no caso de
+dígrafos.
 
-```sh
-npm run build
-```
+### buscaProfundidade()
 
-You can preview the production build with `npm run preview`.
+Executa DFS a partir de um vértice inicial.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+### buscaLargura()
+
+Executa BFS a partir de um vértice inicial.

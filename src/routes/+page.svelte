@@ -312,7 +312,7 @@
   }
 
   let numVertices = $state(5);
-  
+
   let verticeX = $state(1);
   let verticeY = $state(5);
   let verticeTransitivo = $state(1);
@@ -330,6 +330,7 @@
     <label for="my-drawer-3" class="btn drawer-button lg:hidden">
       Abrir Menu
     </label>
+    <p>Todas os algoritmos são aplicados no grafo abaixo. O histórico não é salvo</p>
     <div class="w-full h-[600px] p-4">
       <div
         bind:this={graphContainer}
@@ -341,7 +342,11 @@
   <div class="drawer-side">
     <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu bg-base-200 min-h-full w-80 p-4 space-y-4">
-      <h2 class="text-lg font-bold">Configurar Grafo</h2>
+      <div class="overflow-hidden w-full">
+        <h2 class="text-lg font-bold ">
+          Trabalho elaborado para a disciplina Algoritmos em Grafos - Professor Geraldo Pereira de Souza
+        </h2>
+      </div>
       <li>
         <label class="form-control">
           <span class="label-text">Número de vértices</span>
@@ -465,4 +470,3 @@
     </ul>
   </div>
 </div>
-
